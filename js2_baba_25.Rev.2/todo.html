@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODOList</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style type="text/css">
+    
+
+    </style>
+
+</head>
+<body>
+
+    <div class="totalWrapper">
+        <div class="todo-form">
+            <div class="flex">
+                <h1 id="time" class="titleText">TODOリスト</h1>
+            </div>
+            
+            <!-- 現在時刻 -->
+            <!-- <h2>Now Time</h2>
+            <h3 id="realtime"></h3> -->
+
+            <!-- <div class="flex">
+                <button id="resetTime"class="titleText button-wrapper">タイマーストップ</button>
+            </div> -->
+
+            <div class="titleText flex">
+                <input id="new-todo" type="text" class="text task-wrapper">  
+                   
+                <div class="task-tab priority">
+                    <select name="Stability" id="Stability" clas="task-list">
+                        <option value="">タイミング</option>
+                        <option value="0">今すぐ</option>
+                        <option value="-1">今日中</option>
+                        <option value="-2">明日</option>
+                        <option value="-3">今週中</option>
+                    </select>  
+
+                    <select name="Interpersonal" id="Interpersonal" clas="task-list">
+                        <option value="">他人関係</option>
+                        <option value="0">なし</option>
+                        <option value="1">ちょっと</option>
+                        <option value="2">ふつう</option>
+                        <option value="3">とても</option>
+                    </select>
+
+                    <select name="Impact" id="Impact" clas="task-list">
+                        <option value="">大切さ</option>
+                        <option value="1">なし</option>
+                        <option value="2">ちょっと</option>
+                        <option value="3">わりと</option>
+                        <option value="4">とても</option>
+                    </select>  
+
+                    <select name="Complexity " id="Complexity" clas="task-list ">
+                        <option value="">面倒さ</option>
+                        <option value="0">簡単</option>
+                        <option value="-1">ちょっと</option>
+                        <option value="-2">面倒</option>
+                        <option value="-3">大変</option>
+                    </select>  
+                </div>
+                
+                <button id="add-button" class="task-wrapper button-wrapper">add</button> 
+            </div>
+<!-- 
+            復元性　Stability
+            対人度　Interpersonal degree
+            影響度　Impact
+            複雑度　Complexity -->
+
+        
+            <!-- TODOリスト -->
+            <div class="flex">
+                <ul id="set_time" class="input-text task-wrapper"></ul>
+            </div>
+        </div>
+ 
+    <!-- 完了タスク記録 -->
+        <div class="table-flex">
+            <table id="task_list" class="input-text task-wrapper"></table>
+        </div>
+    </div>
+<!-- JS/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+ <script>
+
+ // 現在時刻t
+    var now = new Date();
+   
+      
+　　   var YearDate = now.getFullYear();
+    
+    
+    // function showClock() {
+        let nowTime = new Date();
+        let nowHour = nowTime.getHours();
+        let nowMin  = nowTime.getMinutes();
+        // let nowSec  = nowTime.getSeconds();
+        let msg = "開始：" + nowHour + ":" + nowMin ;
+        // document.getElementById("realtime").innerHTML = msg;
+    //     }
+    //     setInterval('showClock()',1000);
+
+    
+    var start_time;
+    var stop_time;
+    
+
+    function startTimer() {
+    start_time = Date.now();
+    }
+
+
+    // カウントダウンタイマー
+    // const time  = document.querySelector('#time');
+    // const sec   = document.querySelector('#sec');
+    // const start = document.querySelector('#start');
+    // const sound = document.querySelector('#sound');
+    // const resetButton = document.querySelector('#resetTime');
+    // let count   = 0;
+    // const s     = 1000;
+
+
+     
+     const button = document.getElementById('add-button');
+    button.addEventListener('click',()=>{
+
+    // //  クリック後計測開始
+    //         const set_id = setInterval(function(){
+    //         count++;
+    //         time.innerHTML='Todo' + count + '秒経過';
+    //          },s);
+    //          console.log(count);
+
+    
+    // // 計測ストップ
+    //         resetButton.addEventListener('click',() =>{
+    //             clearInterval(set_id);
+    //             count--;
+    //             time.innerHTML='Todo' + 0 + '秒経過';
+    // //             // localStorage.clear();        
+    //         });
+        var textForm = document.getElementById("new-todo");
+        textForm.value = '';
+
+
+        const input = document.getElementById('new-todo');
+             
+        const li = document.createElement('li');
+
+        var start_time = Date.now();
+        var timeCount = start_time - now;
+        var timeChcek = Math.floor(timeCount / 1000);
+        // console.log(timeChcek);
+    
+        
+        //開始時間の削除 + timeChcek + '秒'
+        li.innerText = input.value +'　'+ msg;
+        // li.setAttribute('id','countTime'); 不要ID追加方法
+        
+  
+      
+
+         // doneボタン
+        const doneButton = document.createElement('button');
+        doneButton.innerText = 'done';
+        li.appendChild(doneButton);
+
+
+              // 優先順位ロジック
+        let slect1 = document.getElementById('Stability');
+        let stability = slect1.value;
+        // console.log(stability);
+
+
+        let slect2 = document.getElementById('Interpersonal');
+        let interpersonal = slect2.value;
+        // console.log(interpersonal);
+
+        let slect3 = document.getElementById('Impact');
+        let impact = slect3.value;
+        // console.log(impact);
+
+        let slect4 = document.getElementById('Complexity');
+        let complexity = slect4.value;
+        // console.log(complexity);
+
+        var priorityValue = parseInt(stability,10) + parseInt(interpersonal,10) + parseInt(impact,10) + parseInt(complexity,10);
+        // li.innerText = priorityValue ;
+        // console.log(priorityValue);
+
+        if(priorityValue <= 12 && priorityValue > 10){
+            const priorityPosition = doneButton.closest('li');
+            priorityPosition .classList.add('position1');
+
+        }  else if( priorityValue <= 10 && priorityValue > 8){
+            const priorityPosition = doneButton.closest('li');
+            priorityPosition .classList.add('position2');
+
+        }   else if( priorityValue <= 8 && priorityValue > 6 ){
+            const priorityPosition = doneButton.closest('li');
+            priorityPosition .classList.add('position3');
+
+        }   else if( priorityValue <= 6 && priorityValue > 4 ){
+            const priorityPosition = doneButton.closest('li');
+            priorityPosition .classList.add('position4');
+
+        }   else if( priorityValue <= 4 && priorityValue > 2 ){
+            const priorityPosition = doneButton.closest('li');
+            priorityPosition .classList.add('position5');
+
+        }     else if( priorityValue <= 2 && priorityValue > 0){
+            const priorityPosition = doneButton.closest('li');
+            priorityPosition .classList.add('position6');
+
+        }   else if( priorityValue <= 1 && priorityValue > -2 ){
+            const priorityPosition = doneButton.closest('li');
+            priorityPosition .classList.add('position7');
+
+        }   else if( priorityValue <= -2 && priorityValue > -3 ){
+            const priorityPosition = doneButton.closest('li');
+            priorityPosition .classList.add('position8');
+
+        }   else if( priorityValue <= -3 ){
+            const priorityPosition = doneButton.closest('li');
+            priorityPosition .classList.add('position9');
+
+        }         
+        
+        
+      
+
+
+        //斜線機能 
+        doneButton.addEventListener('click',() =>{
+            const close = doneButton.closest('li');
+            close.classList.add('done');
+           
+            const key   = document.querySelector('#new-todo').value;
+            console.log(key);
+               
+
+            var finishTime = Date.now();
+            var useTime = finishTime - start_time;
+
+            // console.log(finishTime);
+            // console.log(start_time);
+
+            var logTime = Math.floor(useTime / 1000);
+            const value = logTime;
+
+        
+            // console.log(value);
+            localStorage.setItem(key,value);  
+     
+            
+               
+            for(let i=0; i<localStorage.length; i++){
+            const key   = localStorage.key(i);
+            const value = localStorage.getItem(key);
+            const html = '<tr><th> '+key+''+'完了'+'</th><td>'+' '+'達成時間'+value+'秒'+'</td></tr>';
+            $("#task_list").append("完了タスク/経過秒数"+html);
+            // localStorage.clear();
+            }
+           
+
+            
+        });
+
+       
+        
+
+        const ul = document.querySelector('ul');
+        ul.appendChild(li);
+    })
+
+   
+
+
+
+// 
+
+
+       
+  
+
+ 
+
+
+
+</script>
+
+
+</body>
+</html>
+
+<style type="text/css">
+
+.done{
+         
+         text-decoration: line-through;
+     }
+
+.position1{
+    order: 1;
+}
+
+.position2{
+    order: 2;
+}
+
+.position3{
+    order: 3;
+}
+
+.position4{
+    order: 4;
+}
+
+.position5{
+    order: 5;
+}
+
+.position6{
+    order: 6;
+}
+
+.position7{
+    order: 7;
+}
+
+.position8{
+    order: 8;
+}
+
+.position9{
+    order: 9;
+}
+
+.totalWrapper{
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+
+}
+ 
+ body{
+     background-color: #00b7ce;
+     max-width: 1500px;
+ }
+
+ .titleText{
+     font-size: 20px;
+     text-align: center;
+     font-weight: bold;
+     color: #fff;      
+
+ }
+
+ .input-text{
+    font-size: 20px;
+     text-align: center;
+     font-weight: bold;
+     color: #fff; 
+ }
+ 
+.task-tab{
+    display: flex;
+    text-align: center;
+}
+
+
+.button-wrapper{
+    display: block;
+
+}
+
+button{
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    padding: 10px;
+    color: #fff;    
+    border: none;
+    font-size: 20px;
+}
+
+button:hover {
+  color: #eb59b3;
+  letter-spacing: 6px;
+  font-weight: bold;
+}
+
+
+
+
+.task-wrapper{
+    display: flex;
+    flex-direction: column;
+    border: none;
+    width: 450px;
+    align-items: center;
+     
+}
+
+.priority{
+    appearance: none;
+    -webkit-appearance: none;
+    background:  #00b7ce;
+    padding: 10px;
+    color: #fff;    
+    border: none;
+    font-size: 20px;
+}
+select{
+    background:  #00b7ce;
+    color: #fff;    
+    border: none;
+    font-size: 20px;
+
+}
+
+
+.prai
+
+.flex{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+   
+    margin: 20px auto;
+}
+
+.table-flex{
+    display: flex;
+    max-width: 100%;
+    flex-direction: column;
+    align-items: center;
+   
+    margin: 20px 1px;
+  
+    flex-shrink: 0;
+}
+
+
+
+ </style>
